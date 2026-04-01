@@ -43,6 +43,18 @@ class PostService {
             console.log("Post fetch error : ", error)
         }
     }
+    async deletePost(postId){
+        try {
+                return await this.databases.deleteDocument(
+                conf.appwritedbId,
+                conf.appwritetbId,
+                postId
+            )
+        } 
+        catch (error) {
+            console.log("Post fetch error : ", error)
+        }
+    }
 }
 
 

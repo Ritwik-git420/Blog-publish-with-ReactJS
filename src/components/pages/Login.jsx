@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Inputbox, Logo } from "../index";
 import authService from '../../appwrite/auth'
@@ -10,9 +10,11 @@ function Login() {
     const { register, handleSubmit } = useForm()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [loading, setloading] = useState(false)
 
     const handleLogin = async (data) => {
         try {
+            setloading(true)
             const session = await authService.login(
                 data.email,
                 data.password
@@ -21,6 +23,7 @@ function Login() {
                 console.log("Login success");
                 const user = await authService.getCurrentUser()
                 dispatch(loginstate(user))
+                setloading(false)
                 navigate("/")
             }
                 
@@ -88,9 +91,9 @@ function Login() {
 
                         <Button
                             type="submit"
-                            className="w-full"
+                            className={`w-full mt-4 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
-                            Sign in
+                            {loading ? "Signing in..." : "Sign in"}
                         </Button>
 
                     </div>

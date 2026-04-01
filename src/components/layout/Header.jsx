@@ -55,7 +55,7 @@ function Header() {
         {
             name: 'logout',
             onClick: handleLogout,
-            active: true
+            active: authstatus,
         }
     ]
     return (
