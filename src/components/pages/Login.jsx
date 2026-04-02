@@ -1,16 +1,17 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Inputbox, Logo } from "../index";
 import authService from '../../appwrite/auth'
 import { useForm } from "react-hook-form";
-import {useSelector, useDispatch} from 'react-redux'
-import {login as loginstate } from '../../store/authSlice'
+import { useSelector, useDispatch } from 'react-redux'
+import { login as loginstate } from '../../store/authSlice'
 
 function Login() {
     const { register, handleSubmit } = useForm()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [loading, setloading] = useState(false)
+    const userdata = useSelector((state) => state.auth.userData)
 
     const handleLogin = async (data) => {
         try {
@@ -19,19 +20,22 @@ function Login() {
                 data.email,
                 data.password
             )
-            if(session){
+            if (session) {
                 console.log("Login success");
                 const user = await authService.getCurrentUser()
                 dispatch(loginstate(user))
                 setloading(false)
                 navigate("/")
             }
-                
+
         }
         catch (error) {
             console.log(error)
         }
     }
+    useEffect(() => {
+        console.log(userdata)
+    }, [userdata])
 
     return (
         <div className="flex items-center justify-center w-full min-h-screen">
