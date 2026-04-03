@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '../index'
 import postService from '../../appwrite/postService'
 import { MdDelete } from "react-icons/md"
-import {Inputbox} from "../index"
+import { Inputbox } from "../index"
+import { useForm } from "react-hook-form";
 
 function AllPost() {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(false)
-    const [editingId, setEditingId] = useState(null)
+    const [editingId, setEditingId] = useState(null)  //    id of post that is being edited
+    const [postData, setPostData] = useState({})      //    oject which has edited post data
+    const { register, handleSubmit, formState: { errors } } = useForm()
 
     useEffect(() => {
         fetchposts()
@@ -46,6 +49,32 @@ function AllPost() {
         setEditingId(prev => prev === id ? null : id)
     }
 
+    const updateData = async (data) => {
+        try {
+            setLoading(true)
+            console.log(data)
+            const res = await postService.updatePost(editingId, data)
+            console.log(res)
+            if (res) {
+                setEditingId(null)
+                setPosts(prev =>                                  // updating local state is better than API call because Api call takes time alternative is to call fetchposts function (slower)
+                    prev.map(post =>
+                        post.$id === editingId
+                            ? { ...post, ...data }
+                            : post
+                    )
+                )
+            }
+        }
+        catch (error) {
+            console.log("Couldnt update post")
+        }
+        finally {
+            setLoading(false)
+        }
+
+    }
+
     return (
         <div className=''>
             <h1>All Post Page</h1>
@@ -58,19 +87,30 @@ function AllPost() {
 
                             {/* LEFT CONTENT */}
                             {editingId === post.$id ?
-                                (<form 
-                                className='flex-1 break-words min-w-0 max-w-[75%] sm:max-w-full'>
-                                    <h2>{post.title}</h2>
-
+                                (<form onSubmit={handleSubmit(updateData)}
+                                    className='flex-1 break-words min-w-0 max-w-[75%] sm:max-w-full'>
+                                    <div className="text-lg font-semibold text-gray-800">
+                                        <Inputbox
+                                            placeholder="Enter title"
+                                            {...register("title", { required: true })}
+                                        />
+                                    </div>
+                                    <div className="text-gray-600 text-sm mt-1">
+                                        <Inputbox
+                                            placeholder="Enter content"
+                                            {...register("content", { required: true })}
+                                        />
+                                    </div>
+                                    <Button type='submit'>Save</Button>
                                 </form>)
                                 :
                                 (<div className="flex-1 break-words min-w-0 max-w-[75%] sm:max-w-full">
-                                    <h2 className="text-lg font-semibold text-gray-800">
+                                    <div className="text-lg font-semibold text-gray-800">
                                         {post.title}
-                                    </h2>
-                                    <p className="text-gray-600 text-sm mt-1">
+                                    </div>
+                                    <div className="text-gray-600 text-sm mt-1">
                                         {post.content}
-                                    </p>
+                                    </div>
                                 </div>)
                             }
 

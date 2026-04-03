@@ -25,34 +25,51 @@ class PostService {
                     userId,
                 }
             );
-        } 
+        }
         catch (error) {
             console.log("Appwrite createPost error", error);
         }
     }
 
-    async getPosts(){
+    async getPosts() {
         try {
-            const res =  await this.databases.listDocuments(
+            const res = await this.databases.listDocuments(
                 conf.appwritedbId,
                 conf.appwritetbId,
             )
             return res.documents;
-        } 
+        }
         catch (error) {
             console.log("Post fetch error : ", error)
         }
     }
-    async deletePost(postId){
+    async deletePost(postId) {
         try {
-                return await this.databases.deleteDocument(
+            return await this.databases.deleteDocument(
                 conf.appwritedbId,
                 conf.appwritetbId,
                 postId
             )
-        } 
+        }
         catch (error) {
             console.log("Post fetch error : ", error)
+        }
+    }
+
+    async updatePost(id, { title, content }) {
+        try {
+            return await this.databases.updateDocument(
+                conf.appwritedbId,
+                conf.appwritetbId,
+                id,
+                {
+                    title,
+                    content,
+                }
+            )
+        }
+        catch (error) {
+            console.log("Post update error: ", error)
         }
     }
 }
