@@ -4,6 +4,7 @@ import postService from '../../appwrite/postService'
 import { MdDelete } from "react-icons/md"
 import { Inputbox } from "../index"
 import { useForm } from "react-hook-form";
+import {useSelector} from 'react-redux'
 
 function AllPost() {
     const [posts, setPosts] = useState([])
@@ -11,10 +12,12 @@ function AllPost() {
     const [editingId, setEditingId] = useState(null)  //    id of post that is being edited
     const [postData, setPostData] = useState({})      //    oject which has edited post data
     const { register, handleSubmit, formState: { errors } } = useForm()
+    const userdata = useSelector((state) => state.auth.userData)
 
     useEffect(() => {
+        if(userdata)
         fetchposts()
-    }, [])
+    }, [userdata])
 
     const deleteposts = async (id) => {
         try {
@@ -33,7 +36,7 @@ function AllPost() {
     const fetchposts = async () => {
         try {
             setLoading(true)
-            const res = await postService.getPosts()
+            const res = await postService.getPosts(userdata.$id)
             setPosts(res)
             console.log(res)
 

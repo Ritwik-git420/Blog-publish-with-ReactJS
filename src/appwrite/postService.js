@@ -1,4 +1,4 @@
-import { Client, Databases, ID } from "appwrite";
+import { Client, Databases, ID, Query } from "appwrite";
 import conf from "../conf/conf";
 
 class PostService {
@@ -31,11 +31,14 @@ class PostService {
         }
     }
 
-    async getPosts() {
+    async getPosts(userId) {
         try {
             const res = await this.databases.listDocuments(
                 conf.appwritedbId,
                 conf.appwritetbId,
+                [
+                    Query.equal("userId", userId)
+                ]
             )
             return res.documents;
         }
